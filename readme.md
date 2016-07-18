@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/hrytsenko/jee-nasdaq.svg?branch=master)](https://travis-ci.org/hrytsenko/jee-nasdaq)
+
 # Summary
 
 Case study of the application based on Java EE.

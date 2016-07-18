@@ -1,0 +1,1 @@
+mvn -f ../modules/jee-nasdaq-web/pom.xml clean package

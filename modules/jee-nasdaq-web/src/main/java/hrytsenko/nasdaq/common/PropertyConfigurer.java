@@ -26,8 +26,8 @@ public class PropertyConfigurer {
 
     private Map<String, String> properties;
 
-    private static Map<String, String> loadSettings(String filename) {
-        LOGGER.info(() -> String.format("Load settings from file %s.", filename));
+    private static Map<String, String> loadProperties(String filename) {
+        LOGGER.info(() -> String.format("Load properties from file %s.", filename));
 
         try {
             byte[] content = Resources.toByteArray(Resources.getResource(filename));
@@ -35,7 +35,7 @@ public class PropertyConfigurer {
             properties.load(new ByteArrayInputStream(content));
             return Maps.fromProperties(properties);
         } catch (Exception exception) {
-            throw new AppException("Could not read properties.", exception);
+            throw new AppException("Could not load properties.", exception);
         }
     }
 
@@ -45,7 +45,7 @@ public class PropertyConfigurer {
     }
 
     public void initPropertiesFrom(String filename) {
-        this.properties = Collections.unmodifiableMap(loadSettings(filename));
+        this.properties = Collections.unmodifiableMap(loadProperties(filename));
     }
 
     @Produces

@@ -9,9 +9,9 @@ import javax.interceptor.InvocationContext;
 
 import com.google.common.base.Stopwatch;
 
+@Auditable
 @Interceptor
 @Priority(Interceptor.Priority.APPLICATION)
-@Auditable
 public class AuditableLogger {
 
     private static final Logger LOGGER = Logger.getLogger(AuditableLogger.class.getName());

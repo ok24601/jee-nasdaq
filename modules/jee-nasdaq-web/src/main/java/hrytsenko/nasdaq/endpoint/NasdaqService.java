@@ -1,20 +1,12 @@
 package hrytsenko.nasdaq.endpoint;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.Timer;
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-
-import org.apache.commons.io.IOUtils;
-
-import hrytsenko.nasdaq.AppException;
 
 @Startup
 @Singleton
@@ -43,17 +35,6 @@ public class NasdaqService {
         LOGGER.info("Update companies.");
 
         nasdaqEndpoint.updateCompanies();
-    }
-
-    @Produces
-    public NasdaqEndpoint.Connector createConnector() {
-        return (String link) -> {
-            try {
-                return IOUtils.toString(new URL(link), StandardCharsets.UTF_8);
-            } catch (IOException exception) {
-                throw new AppException(String.format("Cannot load data from %s.", link), exception);
-            }
-        };
     }
 
 }

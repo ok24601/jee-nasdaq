@@ -1,5 +1,8 @@
 package hrytsenko.nasdaq.endpoint;
 
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -8,6 +11,9 @@ import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import org.apache.commons.io.IOUtils;
+
+import hrytsenko.nasdaq.AppException;
 import hrytsenko.nasdaq.common.Auditable;
 import hrytsenko.nasdaq.common.Property;
 import hrytsenko.nasdaq.company.CompanyService;
@@ -16,17 +22,10 @@ import hrytsenko.nasdaq.domain.Company;
 @Stateless
 public class NasdaqEndpoint {
 
-    @FunctionalInterface
-    public interface Connector {
-        String loadData(String url);
-    }
-
     private static final Logger LOGGER = Logger.getLogger(NasdaqEndpoint.class.getName());
 
     private String linkToDownload;
     private String[] exchanges;
-
-    private Connector connector;
 
     private CompanyService companyService;
 
@@ -38,11 +37,6 @@ public class NasdaqEndpoint {
     @Inject
     public void setExchanges(@Property("exchanges") String[] exchanges) {
         this.exchanges = exchanges;
-    }
-
-    @Inject
-    public void setConnector(Connector connector) {
-        this.connector = connector;
     }
 
     @Inject
@@ -58,8 +52,16 @@ public class NasdaqEndpoint {
 
     private List<Company> loadCompanies(String exchange) {
         LOGGER.info(() -> String.format("Load companies for %s.", exchange));
-        String content = connector.loadData(linkToDownload.replace("{exchange}", exchange));
+        String content = loadData(linkToDownload.replace("{exchange}", exchange));
         return NasdaqParser.parseCompanies(exchange, content);
+    }
+
+    protected String loadData(String link) {
+        try {
+            return IOUtils.toString(new URL(link), StandardCharsets.UTF_8);
+        } catch (IOException exception) {
+            throw new AppException(String.format("Cannot load data from %s.", link), exception);
+        }
     }
 
 }

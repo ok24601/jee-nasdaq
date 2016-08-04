@@ -14,7 +14,6 @@ import com.google.common.io.Resources;
 import hrytsenko.nasdaq.company.CompanyRepository;
 import hrytsenko.nasdaq.company.CompanyService;
 import hrytsenko.nasdaq.domain.Company;
-import hrytsenko.nasdaq.endpoint.NasdaqEndpoint.Connector;
 
 public class NasdaqServiceTest {
 
@@ -35,7 +34,8 @@ public class NasdaqServiceTest {
         nasdaqEndpoint.setCompanyService(companyService);
         nasdaqEndpoint.setExchanges(new String[] { "NASDAQ", "NYSE" });
         nasdaqEndpoint.setLinkToDownload("companies/{exchange}.csv");
-        nasdaqEndpoint.setConnector(createConnector());
+        Mockito.doAnswer(invocation -> loadDataFromResource(invocation.getArgumentAt(0, String.class)))
+                .when(nasdaqEndpoint).loadData(Mockito.anyString());
 
         nasdaqService = new NasdaqService();
         nasdaqService.setNasdaqService(nasdaqEndpoint);
@@ -57,14 +57,12 @@ public class NasdaqServiceTest {
         Mockito.verify(companyRepository, Mockito.times(3)).updateCompany(Mockito.any(Company.class));
     }
 
-    private Connector createConnector() {
-        return (String link) -> {
-            try {
-                return Resources.toString(Resources.getResource(link), StandardCharsets.UTF_8);
-            } catch (IOException exception) {
-                throw new IllegalStateException("Cannot load the data file.");
-            }
-        };
+    private String loadDataFromResource(String resourceName) {
+        try {
+            return Resources.toString(Resources.getResource(resourceName), StandardCharsets.UTF_8);
+        } catch (IOException exception) {
+            throw new IllegalStateException("Cannot load the resource.");
+        }
     }
 
 }

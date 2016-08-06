@@ -47,7 +47,7 @@ public class NasdaqEndpoint {
     @Auditable
     @Asynchronous
     public void updateCompanies() {
-        Stream.of(exchanges).forEach(exchange -> loadCompanies(exchange).forEach(companyService::updateCompany));
+        Stream.of(exchanges).map(this::loadCompanies).flatMap(List::stream).forEach(companyService::updateCompany);
     }
 
     private List<Company> loadCompanies(String exchange) {

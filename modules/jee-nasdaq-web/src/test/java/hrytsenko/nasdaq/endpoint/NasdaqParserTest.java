@@ -13,7 +13,7 @@ import hrytsenko.nasdaq.domain.Company;
 public class NasdaqParserTest {
 
     @Test
-    public void testSync() throws Exception {
+    public void testParseCompanies() throws Exception {
         String data = Resources.toString(Resources.getResource("companies/NASDAQ.csv"), StandardCharsets.UTF_8);
         List<Company> companies = NasdaqParser.parseCompanies("TEST", data);
 
